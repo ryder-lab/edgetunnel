@@ -1,0 +1,23 @@
+name: Scheduled Sync
+
+on:
+  schedule:
+    - cron: '0 0 1 * *' # 每天凌晨 0:00 自动执行一次
+  workflow_dispatch:      # 允许你在网页上手动点击按钮立即执行
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout target repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # 必须拉取完整历史以确保合并成功
+
+      - name: Sync Upstream
+        uses: aormsby/Fork-Sync-With-Upstream-action@v3.4.1
+        with:
+          target_repo_token: ${{ secrets.GITHUB_TOKEN }}
+          upstream_checkout_branch: main  # 原作者的主分支名，通常是 main 或 master
+          target_checkout_branch: main    # 你自己的主分支名
+          upstream_sync_repo: cmliu/edgetunnel # 例如: cloudflare/workers-sdk
